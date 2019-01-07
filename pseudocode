@@ -1,0 +1,55 @@
+def check_conn_establish:
+   record_pid = 0
+   pid = 0
+   
+   if there is /var/??/conn.pid:
+      record_pid = get the ssh process id from /var/??/conn.pid
+   if there is ssh process:
+      pid = get the ssh process id from the process table
+	  
+   if record_pid = 0 and not pid = 0:
+      # something is wrong
+	  kill process with pid
+	  return false
+	  
+   if not record_pid = 0 and pid = 0:
+      # something is wrong
+	  remove the file /var/??/conn.pid
+      return false
+   
+   if not record_pid = pid:
+      # something is wrong
+	  kill process with pid
+	  remove the file /var/??/conn.pid
+      return false
+   
+   if record_pid = 0 and pid = 0:
+      # connection is not establised
+	  return false
+	  
+   return true
+   
+def check_conn_flag:
+   if check infra web location has the file:
+      if not check_conn_establish:
+	     establish_conn
+   else:
+      if check_conn_establish:
+	     terminate_conn
+
+def establish_conn:
+	remove the file /var/??/conn.pid
+	
+	screen -dmS conn conn.sh
+	pid = get ssh pid
+	create the file /var/???/conn.pid with content is pid
+
+def terminate_conn:
+    
+   pid = get ssh pid
+   if there is pid:
+      kill pid
+   if there is /var/??/conn.pid
+      remove /var/??/conn.pid
+
+	  
