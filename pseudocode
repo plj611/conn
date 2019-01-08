@@ -1,55 +1,37 @@
-def check_conn_establish:
-   record_pid = 0
-   pid = 0
-   
-   if there is /var/??/conn.pid:
-      record_pid = get the ssh process id from /var/??/conn.pid
-   if there is ssh process:
-      pid = get the ssh process id from the process table
-	  
-   if record_pid = 0 and not pid = 0:
-      # something is wrong
-	  kill process with pid
-	  return false
-	  
-   if not record_pid = 0 and pid = 0:
-      # something is wrong
-	  remove the file /var/??/conn.pid
+def get_pids():
+   screen_pid = 0
+   ssh_pid = 0
+
+   use subprocess.Popen('ps'...) to get the pid of screen and ssh
+   return screen_pid, ssh_pid
+
+def check_conn_establish():
+   screen_pid, ssh_pid = get_pids()
+
+   if screen_pid & ssh_pid == 0:
+      if not screen_pid == 0 or not ssh_pid == 0
+         # something is wrong
+         terminate_conn(screen_pid, ssh_pid)
       return false
-   
-   if not record_pid = pid:
-      # something is wrong
-	  kill process with pid
-	  remove the file /var/??/conn.pid
-      return false
-   
-   if record_pid = 0 and pid = 0:
-      # connection is not establised
-	  return false
-	  
-   return true
+   else:
+      return true
    
 def check_conn_flag:
+
    if check infra web location has the file:
       if not check_conn_establish:
 	     establish_conn
    else:
-      if check_conn_establish:
-	     terminate_conn
+      screen_pid, ssh_pid = get_pids()
+      terminate_conn(screen_pid, ssh_pid)
 
 def establish_conn:
-	remove the file /var/??/conn.pid
 	
-	screen -dmS conn conn.sh
-	pid = get ssh pid
-	create the file /var/???/conn.pid with content is pid
+   screen -dmS conn conn.sh
 
-def terminate_conn:
-    
-   pid = get ssh pid
-   if there is pid:
-      kill pid
-   if there is /var/??/conn.pid
-      remove /var/??/conn.pid
-
-	  
+def terminate_conn(screen_pid, ssh_pid):
+  
+   if not ssh_pid == 0:
+      kill ssh
+   if not screen_pid == 0:
+      kill screen
