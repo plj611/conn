@@ -52,7 +52,8 @@ def check_conn_flag():
    url = 'http://' + para.ip + '/flag'
 
    try:
-      line = url_req.urlopen(url)
+      line = url_req.urlopen(url).readline()
+      line = line.decode()
    except urllib.error.URLError as E:
       print(E.reason)
    else:
@@ -65,8 +66,8 @@ def check_conn_flag():
 
 if __name__ == '__main__':
    print('hi')
-   #check_conn_flag()
+   check_conn_flag()
    #check_conn_establish()
    #establish_conn()
-   screen_pid, ssh_pid = get_pids()
+   #screen_pid, ssh_pid = get_pids()
    #terminate_conn(screen_pid, ssh_pid) 
