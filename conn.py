@@ -4,15 +4,18 @@ import para
 import urllib.request as url_req
 import urllib.error
 import subprocess
+import os, signal
 
 def establish_conn():
+   
+   subprocess.call(["/usr/bin/screen", "-d", "-m", "-S", "conn", os.path.join(para.home_path, 'tunn')])
 
-   pass
+def terminate_conn(screen_pid, ssh_pid):
 
-def terminate_conn():
-
-   pass
-
+   if not ssh_pid == 0:
+      os.kill(ssh_pid, signal.SIGTERM)
+   if not screen_pid == 0:
+      os.kill(screen_pid, signal.SIGTERM)
 
 def check_conn_establish():
    screen_pid, ssh_pid = get_pids()
@@ -34,17 +37,16 @@ def get_pids():
       header = lines[0]
       pid_pos = header.decode().find('PID')
       comm_pos = header.decode().find('COMMAND')
-      print(pid_pos, comm_pos)
       for line in lines[1:]:
          comm = line[comm_pos:].decode()
          pid = line[:pid_pos + 3].decode() 
-         if comm.startswith('SCREEN -dmS'):
+         if comm.startswith('/usr/bin/SCREEN -d -m -S'):
             screen_pid = pid
 
-         if comm.startswith('ssh -R'):
+         if comm.startswith('/usr/bin/ssh -R'):
             ssh_pid = pid
-
-      return screen_pid, ssh_pid
+      print(screen_pid, ssh_pid)
+      return int(screen_pid), int(ssh_pid)
 
 def check_conn_flag():
    url = 'http://' + para.ip + '/flag'
@@ -64,4 +66,7 @@ def check_conn_flag():
 if __name__ == '__main__':
    print('hi')
    #check_conn_flag()
-   check_conn_establish()
+   #check_conn_establish()
+   #establish_conn()
+   screen_pid, ssh_pid = get_pids()
+   #terminate_conn(screen_pid, ssh_pid) 
