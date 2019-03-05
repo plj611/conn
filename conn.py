@@ -5,6 +5,7 @@ import urllib.request as url_req
 import urllib.error
 import subprocess
 import os, signal
+import json
 
 def establish_conn():
    
@@ -51,18 +52,30 @@ def get_pids():
 def check_conn_flag():
    url = 'http://' + para.ip + '/flag'
 
+   url_new = 'http://' + para.ip + ':8005/cmd/00'
+
    try:
       line = url_req.urlopen(url).readline()
       line = line.decode()
+
+      line_new = url_req.urlopen(url_new).readline()
+      line_new = line_new.decode()
+
+      line_dict = json.JSONDecoder().decode(line_new)
+
+      print(line_dict['act'])
+
    except urllib.error.URLError as E:
       print(E.reason)
    else:
       if line.startswith('1'):
-         if not check_conn_establish():
-            establish_conn()
+         print('hihi')
+###         if not check_conn_establish():
+###            establish_conn()
       else:
-         screen_pid, ssh_pid = get_pids()
-         terminate_conn(screen_pid, ssh_pid) 
+###         screen_pid, ssh_pid = get_pids()
+###         terminate_conn(screen_pid, ssh_pid) 
+         pass
 
 if __name__ == '__main__':
    print('hi')
